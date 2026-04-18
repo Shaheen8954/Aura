@@ -1,0 +1,6 @@
+{
+  "name": "AURA",
+  "description": "Professional LinkedIn & social media cover image generator for engineers, CTOs, and tech leaders.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["Image Generation", "Analytics", "Customization"]
+}
