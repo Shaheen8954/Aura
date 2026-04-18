@@ -13,7 +13,7 @@ import { BannerPreview } from './components/BannerPreview';
 import { Analytics } from './components/Analytics';
 import { LandingPage } from './components/LandingPage';
 import { cn } from './lib/utils';
-import html2canvas from 'html2canvas';
+import { toPng } from 'html-to-image';
 import { motion, AnimatePresence } from 'motion/react';
 import { CATEGORIES, CATEGORY_THEMES } from './constants';
 
@@ -46,10 +46,12 @@ export default function App() {
     }
   }, [isLightMode]);
 
+  const [isDownloading, setIsDownloading] = useState(false);
+
   const handleDownload = async () => {
     if (!bannerRef.current) return;
     
-    // Ensure the capture area is visible and correctly sized
+    setIsDownloading(true);
     const spec = PLATFORMS[platform];
     const captureElement = bannerRef.current;
     
@@ -59,21 +61,35 @@ export default function App() {
         await new Promise(resolve => setTimeout(resolve, 500));
       }
 
-      const canvas = await html2canvas(captureElement, {
-        width: spec.width,
-        height: spec.height,
-        scale: 2, // High resolution
-        useCORS: true,
-        backgroundColor: null,
-        logging: false,
+      // Calculate scale to ensure output exactly matches platform specs
+      const elementWidth = captureElement.offsetWidth;
+      const targetScale = spec.width / elementWidth;
+
+      // In order to make the image high resolution but match the aspect ratio 
+      // of the on-screen preview, we use the ratio of (spec width / on-screen width)
+      // multiplied by a high-res factor (e.g. 2 for Retina) if desired. 
+      // LinkedIn recommends 1584x396, so we'll target exactly those dimensions via scale.
+      
+      const dataUrl = await toPng(captureElement, {
+        pixelRatio: targetScale,
+        skipFonts: false,
+        style: {
+          transform: 'scale(1)',
+          transformOrigin: 'top left',
+        }
       });
       
       const link = document.createElement('a');
       link.download = `aura-${platform}-${Date.now()}.png`;
-      link.href = canvas.toDataURL('image/png');
+      link.href = dataUrl;
+      document.body.appendChild(link);
       link.click();
+      document.body.removeChild(link);
     } catch (error) {
       console.error('Download failed:', error);
+      alert('Failed to generate image. Please try again or try another browser.');
+    } finally {
+      setIsDownloading(false);
     }
   };
 
@@ -380,9 +396,20 @@ export default function App() {
                 <div className="flex gap-4">
                   <button 
                     onClick={handleDownload}
-                    className="btn btn-primary px-10 py-3 text-base"
+                    disabled={isDownloading}
+                    className="btn btn-primary px-10 py-3 text-base min-w-[280px] flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    Instant Download ({PLATFORMS[platform].width} x {PLATFORMS[platform].height}px)
+                    {isDownloading ? (
+                      <>
+                        <div className="w-5 h-5 border-2 border-black/20 border-t-black rounded-full animate-spin" />
+                        <span>Generating High-Res...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Download size={18} />
+                        <span>Instant Download ({PLATFORMS[platform].width} x {PLATFORMS[platform].height}px)</span>
+                      </>
+                    )}
                   </button>
                   <button className="btn btn-secondary px-6 py-3 text-base flex items-center space-x-2">
                     <Share2 size={18} />
