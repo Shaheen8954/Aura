@@ -22,6 +22,7 @@ export default function App() {
   const [activeTab, setActiveTab] = useState<'editor' | 'analytics'>('editor');
   const [isLightMode, setIsLightMode] = useState(false);
   const [platform, setPlatform] = useState<Platform>('linkedin');
+  const [hoveredTheme, setHoveredTheme] = useState<string | null>(null);
   const [config, setConfig] = useState<BannerConfig>({
     name: 'Sarah Jenkins',
     role: 'Lead DevOps Engineer | AWS Certified',
@@ -293,23 +294,32 @@ export default function App() {
 
                 <section className="space-y-6">
                   <div className="text-[11px] font-bold uppercase tracking-widest text-[#999999]">Design Template</div>
-                  <div className="grid grid-cols-1 gap-2 h-[200px] overflow-y-auto custom-scrollbar pr-2">
+                  <div className="grid grid-cols-2 gap-3 h-[320px] overflow-y-auto custom-scrollbar pr-2 pb-4">
                     {CATEGORY_THEMES[config.category].map((t) => (
                       <button
                         key={t.id}
                         onClick={() => setConfig({ ...config, theme: t.id })}
+                        onMouseEnter={() => setHoveredTheme(t.id)}
+                        onMouseLeave={() => setHoveredTheme(null)}
                         className={cn(
-                          "flex flex-col items-start p-3 rounded-lg border transition-all text-sm font-bold",
+                          "relative rounded-lg overflow-hidden border-2 transition-all p-0 block w-full text-left bg-[#0A0A0A] group",
                           config.theme === t.id 
-                            ? "bg-[#BBFF00]/10 border-[#BBFF00] text-[#BBFF00]" 
-                            : "border-[#2D2D30] light:border-slate-200 text-slate-400 hover:border-slate-500"
+                            ? "border-[#BBFF00] shadow-[0_0_15px_rgba(187,255,0,0.2)] bg-[#BBFF00]/5" 
+                            : "border-[#2D2D30] hover:border-[#555]"
                         )}
                       >
-                        <div className="flex items-center space-x-3 mb-1">
-                          <t.icon size={16} />
-                          <span>{t.name}</span>
+                        <div className="w-full relative pt-[25%] overflow-hidden pointer-events-none bg-[#050505]">
+                          {/* Inner scaled container rendering the live preview math: 120px target / 800px width = ~0.15 */}
+                          <div className="absolute top-0 left-0 w-[800px] h-[200px] origin-top-left" style={{ transform: 'scale(0.15)' }}>
+                            <BannerPreview config={{ ...config, theme: t.id }} platform="linkedin" />
+                          </div>
                         </div>
-                        <span className="text-[10px] font-normal opacity-60">{t.description}</span>
+                        <div className="p-2 border-t border-[#2d2d30] bg-[#121212] group-hover:bg-[#1a1a1a] transition-colors">
+                          <div className="text-[10px] font-bold truncate text-[#E4E3E0] flex items-center gap-1.5">
+                            <t.icon size={12} className={cn("shrink-0", config.theme === t.id ? "text-[#BBFF00]" : "text-[#888]")}/> 
+                            <span className="truncate">{t.name}</span>
+                          </div>
+                        </div>
                       </button>
                     ))}
                   </div>
@@ -389,7 +399,7 @@ export default function App() {
                 <div className="w-full max-w-5xl relative group">
                   <div className="absolute -inset-4 bg-[#BBFF00]/5 rounded-xl blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                   <div className="relative overflow-hidden rounded-md border border-[#2D2D30] shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
-                    <BannerPreview config={config} platform={platform} ref={bannerRef} />
+                    <BannerPreview config={{...config, theme: hoveredTheme || config.theme}} platform={platform} ref={bannerRef} />
                   </div>
                 </div>
 
