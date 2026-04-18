@@ -172,7 +172,12 @@ export default function App() {
         <div className="flex items-center space-x-4">
           <button 
             onClick={() => setIsLightMode(!isLightMode)}
-            className="platform-chip active flex items-center space-x-2 px-3 py-1.5 rounded-full border border-[#2D2D30] text-xs font-bold"
+            className={cn(
+              "flex items-center space-x-2 px-3 py-1.5 rounded-full border text-xs font-bold transition-all",
+              isLightMode 
+                ? "border-slate-300 text-slate-800 bg-white hover:bg-slate-100 shadow-sm" 
+                : "border-[#2D2D30] text-white bg-[#0D0D0E] hover:bg-[#19191B]"
+            )}
           >
             {isLightMode ? <Moon size={14} /> : <Sun size={14} />}
             <span>{isLightMode ? 'Dark Mode' : 'Light Mode'}</span>
@@ -302,21 +307,21 @@ export default function App() {
                         onMouseEnter={() => setHoveredTheme(t.id)}
                         onMouseLeave={() => setHoveredTheme(null)}
                         className={cn(
-                          "relative rounded-lg overflow-hidden border-2 transition-all p-0 block w-full text-left bg-[#0A0A0A] group",
+                          "relative rounded-lg overflow-hidden border-2 transition-all p-0 block w-full text-left bg-[#0A0A0A] light:bg-white group",
                           config.theme === t.id 
-                            ? "border-[#BBFF00] shadow-[0_0_15px_rgba(187,255,0,0.2)] bg-[#BBFF00]/5" 
-                            : "border-[#2D2D30] hover:border-[#555]"
+                            ? "border-[#BBFF00] light:border-blue-500 shadow-[0_0_15px_rgba(187,255,0,0.2)] light:shadow-[0_0_10px_rgba(59,130,246,0.3)] bg-[#BBFF00]/5 light:bg-blue-50" 
+                            : "border-[#2D2D30] light:border-slate-200 hover:border-[#555] light:hover:border-slate-300"
                         )}
                       >
-                        <div className="w-full relative pt-[25%] overflow-hidden pointer-events-none bg-[#050505]">
+                        <div className="w-full relative pt-[25%] overflow-hidden pointer-events-none bg-[#050505] light:bg-slate-100">
                           {/* Inner scaled container rendering the live preview math: 120px target / 800px width = ~0.15 */}
                           <div className="absolute top-0 left-0 w-[800px] h-[200px] origin-top-left" style={{ transform: 'scale(0.15)' }}>
                             <BannerPreview config={{ ...config, theme: t.id }} platform="linkedin" />
                           </div>
                         </div>
-                        <div className="p-2 border-t border-[#2d2d30] bg-[#121212] group-hover:bg-[#1a1a1a] transition-colors">
-                          <div className="text-[10px] font-bold truncate text-[#E4E3E0] flex items-center gap-1.5">
-                            <t.icon size={12} className={cn("shrink-0", config.theme === t.id ? "text-[#BBFF00]" : "text-[#888]")}/> 
+                        <div className="p-2 border-t border-[#2d2d30] light:border-slate-200 bg-[#121212] light:bg-white group-hover:bg-[#1a1a1a] light:group-hover:bg-slate-50 transition-colors">
+                          <div className="text-[10px] font-bold truncate text-[#E4E3E0] light:text-slate-800 flex items-center gap-1.5">
+                            <t.icon size={12} className={cn("shrink-0", config.theme === t.id ? "text-[#BBFF00] light:text-blue-500" : "text-[#888] light:text-slate-400")}/> 
                             <span className="truncate">{t.name}</span>
                           </div>
                         </div>
@@ -349,8 +354,8 @@ export default function App() {
                             className={cn(
                               "flex-1 py-1.5 text-[10px] font-bold rounded border transition-all uppercase",
                               config.fontSize === size 
-                                ? "bg-[#BBFF00]/10 border-[#BBFF00] text-[#BBFF00]" 
-                                : "border-[#2D2D30] text-slate-500 hover:border-slate-400"
+                                ? "bg-[#BBFF00]/10 light:bg-blue-50 border-[#BBFF00] light:border-blue-500 text-[#BBFF00] light:text-blue-600" 
+                                : "border-[#2D2D30] light:border-slate-200 text-slate-500 hover:border-slate-400 light:hover:border-slate-300"
                             )}
                           >
                             {size}
@@ -363,8 +368,8 @@ export default function App() {
                       className={cn(
                         "w-full py-2.5 rounded border transition-all flex items-center justify-center space-x-2 text-xs font-bold",
                         config.highContrast 
-                          ? "bg-[#BBFF00] text-black border-[#BBFF00]" 
-                          : "border-[#2D2D30] text-slate-400 hover:border-slate-300"
+                          ? "bg-[#BBFF00] light:bg-blue-600 text-black light:text-white border-[#BBFF00] light:border-blue-600" 
+                          : "border-[#2D2D30] light:border-slate-200 text-slate-400 hover:border-slate-300 light:hover:border-slate-300"
                       )}
                     >
                       <Accessibility size={14} />
@@ -373,8 +378,8 @@ export default function App() {
                   </div>
                 </section>
 
-                <section className="mt-auto pt-6 border-t border-[#2D2D30] space-y-4">
-                  <div className="text-[11px] font-bold uppercase tracking-widest text-[#999999]">Export For</div>
+                <section className="mt-auto pt-6 border-t border-[#2D2D30] light:border-slate-200 space-y-4">
+                  <div className="text-[11px] font-bold uppercase tracking-widest text-[#999999] light:text-slate-500">Export For</div>
                   <div className="grid grid-cols-2 gap-2">
                     {(['linkedin', 'twitter', 'facebook'] as const).map((p) => (
                       <button
@@ -383,8 +388,8 @@ export default function App() {
                         className={cn(
                           "platform-chip text-[11px] font-bold py-2 px-3 rounded-full border transition-all flex items-center justify-center space-x-2",
                           platform === p 
-                            ? "bg-[#BBFF00]/10 border-[#BBFF00] text-[#BBFF00]" 
-                            : "bg-[#0D0D0E] border-[#2D2D30] text-slate-500 hover:border-slate-400"
+                            ? "bg-[#BBFF00]/10 light:bg-blue-50 border-[#BBFF00] light:border-blue-500 text-[#BBFF00] light:text-blue-600" 
+                            : "bg-[#0D0D0E] light:bg-slate-100 border-[#2D2D30] light:border-slate-200 text-slate-500 hover:border-slate-400 light:hover:border-slate-300"
                         )}
                       >
                         <span className="capitalize">{p}</span>
@@ -395,7 +400,7 @@ export default function App() {
               </aside>
 
               {/* Main Editor View */}
-              <main className="bg-[#080808] flex flex-col items-center justify-center p-12 gap-8 overflow-y-auto">
+              <main className="bg-[#080808] light:bg-slate-100 flex flex-col items-center justify-center p-12 gap-8 overflow-y-auto">
                 <div className="w-full max-w-5xl relative group">
                   <div className="absolute -inset-4 bg-[#BBFF00]/5 rounded-xl blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                   <div className="relative overflow-hidden rounded-md border border-[#2D2D30] shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
@@ -428,17 +433,17 @@ export default function App() {
                 </div>
 
                 <div className="grid grid-cols-3 gap-6 w-full max-w-2xl mt-8">
-                  <div className="p-4 rounded-xl bg-[#19191B] border border-[#2D2D30] text-center">
-                    <div className="text-[10px] font-bold text-[#999999] uppercase tracking-widest mb-1">Ratio</div>
-                    <div className="text-sm font-bold text-[#BBFF00]">{PLATFORMS[platform].ratio}</div>
+                  <div className="p-4 rounded-xl bg-[#19191B] light:bg-white border border-[#2D2D30] light:border-slate-200 text-center">
+                    <div className="text-[10px] font-bold text-[#999999] light:text-slate-500 uppercase tracking-widest mb-1">Ratio</div>
+                    <div className="text-sm font-bold text-[#BBFF00] light:text-slate-900">{PLATFORMS[platform].ratio}</div>
                   </div>
-                  <div className="p-4 rounded-xl bg-[#19191B] border border-[#2D2D30] text-center">
-                    <div className="text-[10px] font-bold text-[#999999] uppercase tracking-widest mb-1">Format</div>
-                    <div className="text-sm font-bold text-[#BBFF00]">PNG 2x</div>
+                  <div className="p-4 rounded-xl bg-[#19191B] light:bg-white border border-[#2D2D30] light:border-slate-200 text-center">
+                    <div className="text-[10px] font-bold text-[#999999] light:text-slate-500 uppercase tracking-widest mb-1">Format</div>
+                    <div className="text-sm font-bold text-[#BBFF00] light:text-slate-900">PNG 2x</div>
                   </div>
-                  <div className="p-4 rounded-xl bg-[#19191B] border border-[#2D2D30] text-center">
-                    <div className="text-[10px] font-bold text-[#999999] uppercase tracking-widest mb-1">Status</div>
-                    <div className="text-sm font-bold text-[#BBFF00]">Ready</div>
+                  <div className="p-4 rounded-xl bg-[#19191B] light:bg-white border border-[#2D2D30] light:border-slate-200 text-center">
+                    <div className="text-[10px] font-bold text-[#999999] light:text-slate-500 uppercase tracking-widest mb-1">Status</div>
+                    <div className="text-sm font-bold text-[#BBFF00] light:text-slate-900">Ready</div>
                   </div>
                 </div>
               </main>
